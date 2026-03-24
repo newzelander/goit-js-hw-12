@@ -71,13 +71,12 @@ async function handleSearch(e) {
 }
 
 async function handleLoadMore() {
-  page += 1;
-
+  hideLoadMoreButton();
   showLoader();
+  page += 1;
 
   try {
     const data = await getImagesByQuery(currentQuery, page);
-
     createGallery(data.hits);
 
     // scroll 👇
@@ -89,9 +88,11 @@ async function handleLoadMore() {
       behavior: 'smooth',
     });
 
-    if (page >= totalPages) {
-      hideLoadMoreButton();
+    totalPages = Math.ceil(data.totalHits / 15);
 
+    if (page < totalPages) {
+      showLoadMoreButton();
+    } else {
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
       });
